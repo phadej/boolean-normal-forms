@@ -1,0 +1,11 @@
+language: haskell
+ghc:
+  - 7.6
+  - 7.8
+
+before_install:
+  - cabal install packdeps
+
+script:
+  - cabal test --show-details=always
+  - packdeps boolean-normal-forms.cabal
