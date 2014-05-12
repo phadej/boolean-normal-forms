@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 --------------------------------------------------------------------
 -- |
@@ -14,7 +15,8 @@ module Data.Algebra.Boolean.FreeBoolean (
   module Data.Algebra.Boolean.CoBoolean
 ) where
 
-import Data.Typeable
+import Data.Typeable (Typeable)
+import Data.Foldable (Foldable)
 
 import Data.Algebra.Boolean.CoBoolean
 import Data.Algebra.Boolean.Negable hiding (not)
@@ -32,7 +34,7 @@ data FreeBoolean a = FBValue a
                    | FBNot (FreeBoolean a)
                    | FBAnd (FreeBoolean a) (FreeBoolean a)
                    | FBOr (FreeBoolean a) (FreeBoolean a)
-  deriving (Eq, Ord, Show, Read, Functor, Typeable)
+  deriving (Eq, Ord, Show, Read, Functor, Foldable, Typeable)
 
 instance CoBoolean1 FreeBoolean where
   toBooleanWith f (FBValue x)  = f x

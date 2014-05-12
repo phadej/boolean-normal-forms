@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TypeFamilies #-}
 --------------------------------------------------------------------
@@ -21,7 +22,8 @@ module Data.Algebra.Boolean.DNF.List (
 import Prelude hiding ((||),(&&),not,any,all,and,or)
 import Data.Monoid
 import Data.Either (partitionEithers)
-import Data.Typeable
+import Data.Typeable (Typeable)
+import Data.Foldable (Foldable)
 
 import Data.Algebra.Boolean.NormalForm
 import Data.Algebra.Boolean.Negable hiding (not)
@@ -35,7 +37,7 @@ import Data.Algebra.Boolean
 --
 -- <<doc-formulae/dnf.svg>>
 newtype DNF a = DNF { unDNF :: [[a]] }
-  deriving (Eq, Ord, Show, Read, Functor, Typeable)
+  deriving (Eq, Ord, Show, Read, Functor, Foldable, Typeable)
 
 instance CoBoolean1 DNF where
   toBooleanWith f = any (all f) . unDNF

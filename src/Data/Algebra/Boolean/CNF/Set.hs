@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TypeFamilies #-}
 --------------------------------------------------------------------
@@ -19,7 +20,8 @@ module Data.Algebra.Boolean.CNF.Set (
 
 import Prelude hiding ((||),(&&),not,and,or,any,all)
 import Data.Monoid
-import Data.Typeable
+import Data.Typeable (Typeable)
+import Data.Foldable (Foldable)
 
 import Data.Set (Set)
 import qualified Data.Set as Set
@@ -39,7 +41,7 @@ import Data.Algebra.Boolean
 --
 -- <<doc-formulae/cnf.svg>>
 newtype CNF a = CNF { unCNF :: Set (Set a) }
-  deriving (Eq, Ord, Show, Read, Typeable)
+  deriving (Eq, Ord, Show, Read, Foldable, Typeable)
 
 instance CoBoolean1 CNF where
   toBooleanWith f = all (any f) . unCNF

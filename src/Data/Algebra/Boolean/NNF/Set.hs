@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TypeFamilies #-}
 --------------------------------------------------------------------
@@ -24,7 +25,8 @@ import qualified Data.Algebra.Boolean.Negable as Negable
 import Prelude hiding ((||),(&&),not,any,all)
 import Data.Algebra.Boolean
 
-import Data.Typeable
+import Data.Typeable (Typeable)
+import Data.Foldable (Foldable)
 
 -- | Boolean formula in Negation Normal Form
 --
@@ -36,7 +38,7 @@ data NNF a = NNFTrue
            | NNFValue a
            | NNFOr (Set (NNF a))
            | NNFAnd (Set (NNF a))
-  deriving (Eq, Ord, Show, Read, Typeable)
+  deriving (Eq, Ord, Show, Read, Foldable, Typeable)
 
 instance CoBoolean a => CoBoolean (NNF a) where
   toBoolean = toBooleanWith toBoolean
