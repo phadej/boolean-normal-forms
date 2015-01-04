@@ -1,2 +1,4 @@
 dist/
 test.tix
+.cabal-sandbox/
+cabal.sandbox.config
