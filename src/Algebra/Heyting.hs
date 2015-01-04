@@ -1,3 +1,12 @@
+--------------------------------------------------------------------
+-- |
+-- Copyright :  © Oleg Grenrus 2014
+-- License   :  MIT
+-- Maintainer:  Oleg Grenrus <oleg.grenrus@iki.fi>
+-- Stability :  experimental
+-- Portability: non-portable
+--
+--------------------------------------------------------------------
 module Algebra.Heyting where
 
 import Algebra.Lattice
