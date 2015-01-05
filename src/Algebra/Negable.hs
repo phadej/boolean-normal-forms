@@ -38,9 +38,14 @@ instance Negable (Neg a) where
 instance Negable Bool where
   not = P.not
 
-instance Monoid m => Negable (Maybe m) where
-  not (Just _)  = Nothing
-  not Nothing   = Just mempty
+instance Negable All where
+  not (All b) = All (not b)
+
+instance Negable Any where
+  not (Any b) = Any (not b)
+
+instance Negable n => Negable (Endo n) where
+  not (Endo f) = Endo $ not . f
 
 instance (Negable a, Negable b) => Negable (a, b) where
   not (x, y) = (not x, not y)
