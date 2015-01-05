@@ -7,14 +7,32 @@
 -- Portability: non-portable
 --
 --------------------------------------------------------------------
-module Algebra.Heyting where
+module Algebra.Heyting (
+  Heyting,
+  module Algebra.Lattice.Extras
+  ) where
 
-import Algebra.Lattice
+import Algebra.Lattice.Extras
 
-class BoundedJoinSemiLattice a => Heyting a where
+infixr 1 ~>
+infixr 1 <~>
+
+-- | Intuitionistic logic.
+class BoundedLattice a => Heyting a where
   -- | Implication.
   (~>) :: a -> a -> a
 
-  -- | negation
+  -- | Equivalence.
+  (<~>) :: a -> a -> a
+  a <~> b = a ~> b /\ b ~> a
+
+  -- | Negation.
   negation :: a -> a
   negation x = x ~> bottom
+
+instance Heyting Bool where
+  a ~> b = not a \/ b
+
+instance (Heyting a, Heyting b) => Heyting (a, b) where
+  (a, b) ~> (c, d) = (a ~> c, b ~> d)
+
