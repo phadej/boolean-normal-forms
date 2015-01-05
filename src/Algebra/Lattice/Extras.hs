@@ -19,11 +19,16 @@ module Algebra.Lattice.Extras (
   -- * Monoid wrappers for lattices
   Join(..),
   Meet(..),
+  -- * Foldable joins and meets
+  joins,
+  meets,
+  -- * Module re-exports
   module Algebra.Lattice
 ) where
 
-import Algebra.Lattice
+import Algebra.Lattice hiding (joins, meets)
 import Data.Monoid
+import Data.Foldable
 import GHC.Generics
 
 infixr 2 \/
@@ -100,3 +105,11 @@ instance BoundedMeetSemiLattice a => BoundedMeetSemiLattice (Endo a) where
 
 instance Lattice a => Lattice (Endo a) where
 instance BoundedLattice a => BoundedLattice (Endo a) where
+
+-- | The join of a `Foldable` of join-semilattice elements
+joins :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
+joins = getJoin . foldMap Join
+
+-- | The meet of a `Foldable` of meet-semilattice elements
+meets :: (BoundedMeetSemiLattice a, Foldable f) => f a -> a
+meets = getMeet . foldMap Meet
