@@ -15,7 +15,6 @@
 module Data.Disjunction where
 
 import GHC.Generics
-import Data.Monoid
 import Data.Semigroup
 import Data.Foldable
 import Data.SetLike
