@@ -16,6 +16,7 @@ module Data.Disjunction where
 
 import GHC.Generics
 import Data.Monoid
+import Data.Semigroup
 import Data.Foldable
 import Data.SetLike
 import Algebra.Lattice.Extras
@@ -30,9 +31,18 @@ instance SetLike c a => JoinSemiLattice (Disjunction c a) where
 instance SetLike c a => BoundedJoinSemiLattice (Disjunction c a) where
   bottom = Disjunction empty
 
+instance SetLike c a => Semigroup (Disjunction c a) where
+  (<>) = join
+
 instance SetLike c a => Monoid (Disjunction c a) where
   mempty = bottom
   mappend = join
+
+instance (SetLike c a, MeetSemiLattice a) => MeetSemiLattice (Disjunction c a) where
+  Disjunction as `meet` Disjunction bs = Disjunction $ endoMap2 meet as bs
+
+instance (SetLike c a, BoundedMeetSemiLattice a) => BoundedMeetSemiLattice (Disjunction c a) where
+  top = Disjunction $ singleton top
 
 lowerDisjunction :: (BoundedJoinSemiLattice a, Foldable (Disjunction c)) => Disjunction c a -> a
 lowerDisjunction = getJoin . foldMap Join

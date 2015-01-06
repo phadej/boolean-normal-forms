@@ -19,6 +19,8 @@ module Algebra.Lattice.Extras (
   -- * Monoid wrappers for lattices
   Join(..),
   Meet(..),
+  -- * Ord lattice
+  MinMax(..),
   -- * Foldable joins and meets
   joins,
   meets,
@@ -27,8 +29,13 @@ module Algebra.Lattice.Extras (
 ) where
 
 import Algebra.Lattice hiding (joins, meets)
-import Data.Monoid
+import Control.Applicative
+import Control.Monad.Fix
+import Control.DeepSeq
+import Data.Monoid hiding ((<>))
+import Data.Semigroup
 import Data.Foldable
+import Data.Traversable
 import GHC.Generics
 
 infixr 2 \/
@@ -42,21 +49,79 @@ infixr 3 /\
 (/\) :: MeetSemiLattice a => a -> a ->a
 (/\) = meet
 
+-- | Monoid wrapper for MeetSemiLattice
+newtype Meet a = Meet { getMeet :: a }
+  deriving (Eq, Ord, Read, Show, Bounded, Generic, Generic1)
+
+instance MeetSemiLattice a => Semigroup (Meet a) where
+  Meet a <> Meet b = Meet (a /\ b)
+
+instance BoundedMeetSemiLattice a => Monoid (Meet a) where
+  mempty = Meet top
+  Meet a `mappend` Meet b = Meet (a /\ b)
+
+instance Functor Meet where
+  fmap f (Meet x) = Meet (f x)
+
+instance Foldable Meet where
+  foldMap f (Meet a) = f a
+
+instance Traversable Meet where
+  traverse f (Meet a) = Meet <$> f a
+
+instance Applicative Meet where
+  pure = Meet
+  a <* _ = a
+  _ *> a = a
+  Meet f <*> Meet x = Meet (f x)
+
+instance Monad Meet where
+  return = Meet
+  _ >> a = a
+  Meet a >>= f = f a
+
+instance MonadFix Meet where
+  mfix f = fix (f . getMeet)
+
+instance NFData a => NFData (Meet a) where
+  rnf (Meet a) = rnf a
+
 -- | Monoid wrapper for JoinSemiLattice
 newtype Join a = Join { getJoin :: a }
   deriving (Eq, Ord, Read, Show, Bounded, Generic, Generic1)
+
+instance JoinSemiLattice a => Semigroup (Join a) where
+  Join a <> Join b = Join (a \/ b)
 
 instance BoundedJoinSemiLattice a => Monoid (Join a) where
   mempty = Join bottom
   Join a `mappend` Join b = Join (a \/ b)
 
--- | Monoid wrapper for MeetSemiLattice
-newtype Meet a = Meet { getMeet :: a }
-  deriving (Eq, Ord, Read, Show, Bounded, Generic, Generic1)
+instance Functor Join where
+  fmap f (Join x) = Join (f x)
 
-instance BoundedMeetSemiLattice a => Monoid (Meet a) where
-  mempty = Meet top
-  Meet a `mappend` Meet b = Meet (a /\ b)
+instance Foldable Join where
+  foldMap f (Join a) = f a
+
+instance Traversable Join where
+  traverse f (Join a) = Join <$> f a
+
+instance Applicative Join where
+  pure = Join
+  a <* _ = a
+  _ *> a = a
+  Join f <*> Join x = Join (f x)
+
+instance Monad Join where
+  return = Join
+  _ >> a = a
+  Join a >>= f = f a
+
+instance MonadFix Join where
+  mfix f = fix (f . getJoin)
+
+instance NFData a => NFData (Join a) where
+  rnf (Join a) = rnf a
 
 -- All
 instance JoinSemiLattice All where
@@ -106,10 +171,82 @@ instance BoundedMeetSemiLattice a => BoundedMeetSemiLattice (Endo a) where
 instance Lattice a => Lattice (Endo a) where
 instance BoundedLattice a => BoundedLattice (Endo a) where
 
+-- Const
+instance JoinSemiLattice a => JoinSemiLattice (Const a b) where
+  Const a `join` Const b = Const $ a `join` b
+
+instance BoundedJoinSemiLattice a => BoundedJoinSemiLattice (Const a b) where
+  bottom = Const bottom
+
+instance MeetSemiLattice a => MeetSemiLattice (Const a b) where
+  Const a `meet` Const b = Const $ a `meet` b
+
+instance BoundedMeetSemiLattice a => BoundedMeetSemiLattice (Const a b) where
+  top = Const top
+
+instance Lattice a => Lattice (Const a b) where
+instance BoundedLattice a => BoundedLattice (Const a b) where
+
+-- Min
+instance Ord a => JoinSemiLattice (Min a) where
+  join = (<>)
+
+instance (Ord a, Bounded a) => BoundedJoinSemiLattice (Min a) where
+  bottom = minBound
+
+-- Max
+instance Ord a => MeetSemiLattice (Max a) where
+  meet = (<>)
+
+instance (Ord a, Bounded a) => BoundedMeetSemiLattice (Max a) where
+  top = maxBound
+
+-- MinMax
+newtype MinMax a = MinMax { getMinMax :: a }
+  deriving (Eq, Ord, Read, Show, Bounded, Generic, Generic1)
+
+instance Ord a => JoinSemiLattice (MinMax a) where
+  MinMax a `join` MinMax b = MinMax (a `min` b)
+
+instance (Ord a, Bounded a) => BoundedJoinSemiLattice (MinMax a) where
+  bottom = MinMax minBound
+
+instance Ord a => MeetSemiLattice (MinMax a) where
+  MinMax a `meet` MinMax b = MinMax (a `max` b)
+
+instance (Ord a, Bounded a) => BoundedMeetSemiLattice (MinMax a) where
+  top = MinMax maxBound
+
+instance Functor MinMax where
+  fmap f (MinMax x) = MinMax (f x)
+
+instance Foldable MinMax where
+  foldMap f (MinMax a) = f a
+
+instance Traversable MinMax where
+  traverse f (MinMax a) = MinMax <$> f a
+
+instance Applicative MinMax where
+  pure = MinMax
+  a <* _ = a
+  _ *> a = a
+  MinMax f <*> MinMax x = MinMax (f x)
+
+instance Monad MinMax where
+  return = MinMax
+  _ >> a = a
+  MinMax a >>= f = f a
+
+instance MonadFix MinMax where
+  mfix f = fix (f . getMinMax)
+
+instance NFData a => NFData (MinMax a) where
+  rnf (MinMax a) = rnf a
+
 -- | The join of a `Foldable` of join-semilattice elements
 joins :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
 joins = getJoin . foldMap Join
 
 -- | The meet of a `Foldable` of meet-semilattice elements
-meets :: (BoundedMeetSemiLattice a, Foldable f) => f a -> a
-meets = getMeet . foldMap Meet
+meets :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
+meets = getJoin . foldMap Join

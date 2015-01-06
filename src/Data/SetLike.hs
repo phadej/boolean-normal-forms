@@ -11,8 +11,8 @@
 --------------------------------------------------------------------
 module Data.SetLike where
 
+import Control.Applicative
 import Data.Foldable
-
 import Data.Set (Set)
 import qualified Data.Set as Set
 
@@ -22,15 +22,21 @@ class Foldable s => SetLike s a where
   singleton :: a -> s a
   union :: s a -> s a -> s a
   null :: s a -> Bool
+  endoMap :: (a -> a) -> s a -> s a
+  endoMap2 :: (a -> a -> a) -> s a -> s a -> s a
 
 instance SetLike [] a where
   empty = []
   singleton x = [x]
   union = (++)
   null = Prelude.null
+  endoMap = Prelude.map
+  endoMap2 = liftA2
 
 instance Ord a => SetLike Set a where
   empty = Set.empty
   singleton = Set.singleton
   union = Set.union
   null = Set.null
+  endoMap = Set.map
+  endoMap2 f a b = Set.fromList $ liftA2 f (Set.toList a) (Set.toList b)
