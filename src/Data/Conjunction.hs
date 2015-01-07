@@ -22,7 +22,7 @@ import Algebra.Lattice.Extras
 
 -- | Free bounded meet semilattice
 newtype Conjunction c a = Conjunction { getConjunction :: c a }
-  deriving (Eq, Ord, Read, Show, Generic, Generic1, Foldable)
+  deriving (Eq, Ord, Read, Show, Generic, Generic1)
 
 instance SetLike c a => MeetSemiLattice (Conjunction c a) where
   Conjunction a `meet` Conjunction b = Conjunction (a `union` b)

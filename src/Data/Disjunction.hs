@@ -22,7 +22,7 @@ import Algebra.Lattice.Extras
 
 -- | Free bounded join semilattice
 newtype Disjunction c a = Disjunction { getDisjunction :: c a }
-  deriving (Eq, Ord, Read, Show, Generic, Generic1, Foldable)
+  deriving (Eq, Ord, Read, Show, Generic, Generic1)
 
 instance SetLike c a => JoinSemiLattice (Disjunction c a) where
   Disjunction a `join` Disjunction b = Disjunction (a `union` b)
