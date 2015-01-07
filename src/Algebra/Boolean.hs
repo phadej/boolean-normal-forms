@@ -53,5 +53,6 @@ any f = getJoin . foldMap (Join . f)
 and :: (Boolean a, Foldable f) => f a -> a
 and = meets
 
+-- | Alias for `joins`
 or :: (Boolean a, Foldable f) => f a -> a
 or = joins
