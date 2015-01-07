@@ -18,7 +18,8 @@ import GHC.Generics
 import Data.Semigroup
 import Data.Foldable
 import Data.SetLike
-import Algebra.Lattice.Extras
+import Algebra.Boolean
+import Prelude hiding (not)
 
 -- | Free bounded join semilattice
 newtype Disjunction c a = Disjunction { getDisjunction :: c a }
@@ -42,6 +43,17 @@ instance (SetLike c a, MeetSemiLattice a) => MeetSemiLattice (Disjunction c a) w
 
 instance (SetLike c a, BoundedMeetSemiLattice a) => BoundedMeetSemiLattice (Disjunction c a) where
   top = Disjunction $ singleton top
+
+-- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q. This is operation (combinatorial explosion).
+instance (Negable a, SetLike c a, BoundedMeetSemiLattice a) => Negable (Disjunction c a) where
+  not (Disjunction as) = Disjunction $ singleton $ meets $ endoMap not as
+
+instance (SetLike c a, MeetSemiLattice a) => Lattice (Disjunction c a) where
+instance (SetLike c a, BoundedMeetSemiLattice a) => BoundedLattice (Disjunction c a) where
+instance (Negable a, SetLike c a, BoundedMeetSemiLattice a) => Boolean (Disjunction c a) where
+instance (Negable a, SetLike c a, BoundedMeetSemiLattice a) => Heyting (Disjunction c a) where
+  (~>) = implication
+  negation = not
 
 lowerDisjunction :: (BoundedJoinSemiLattice a, Foldable (Disjunction c)) => Disjunction c a -> a
 lowerDisjunction = getJoin . foldMap Join

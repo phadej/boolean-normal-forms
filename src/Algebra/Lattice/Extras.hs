@@ -250,8 +250,8 @@ joins :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
 joins = getJoin . foldMap Join
 
 -- | The meet of a `Foldable` of meet-semilattice elements
-meets :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
-meets = getJoin . foldMap Join
+meets :: (BoundedMeetSemiLattice a, Foldable f) => f a -> a
+meets = getMeet . foldMap Meet
 
 -- | Lift `Bool`
 fromBool :: BoundedLattice b => Bool -> b

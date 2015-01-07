@@ -1,7 +1,5 @@
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE AutoDeriveTypeable #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 --------------------------------------------------------------------
 -- |
 -- Copyright :  © Oleg Grenrus 2014
@@ -17,8 +15,8 @@ module Algebra.Negable (
 )
   where
 
-import GHC.Generics
 import Data.Monoid
+import Data.Typeable
 
 import Prelude hiding (not)
 import qualified Prelude as P
@@ -59,4 +57,4 @@ instance (Negable a, Negable b) => Negable (Either a b) where
 -- | Free 'Negable'.
 data Neg a = Pos a -- ^ Positive value
            | Neg a -- ^ Negative value
-  deriving (Eq, Ord, Show, Read, Functor, Generic, Generic1)
+  deriving (Eq, Ord, Show, Read, Functor, Typeable)
