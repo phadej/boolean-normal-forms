@@ -24,6 +24,8 @@ module Algebra.Lattice.Extras (
   -- * Foldable joins and meets
   joins,
   meets,
+  -- * Extra functions
+  fromBool,
   -- * Module re-exports
   module Algebra.Lattice
 ) where
@@ -250,3 +252,8 @@ joins = getJoin . foldMap Join
 -- | The meet of a `Foldable` of meet-semilattice elements
 meets :: (BoundedJoinSemiLattice a, Foldable f) => f a -> a
 meets = getJoin . foldMap Join
+
+-- | Lift `Bool`
+fromBool :: BoundedLattice b => Bool -> b
+fromBool True  = top
+fromBool False = bottom
