@@ -44,7 +44,7 @@ instance (SetLike c a, MeetSemiLattice a) => MeetSemiLattice (Disjunction c a) w
 instance (SetLike c a, BoundedMeetSemiLattice a) => BoundedMeetSemiLattice (Disjunction c a) where
   top = Disjunction $ singleton top
 
--- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q. This is operation (combinatorial explosion).
+-- | Uses De Morgan's law @¬ (P ∨ Q) = ¬ P ∧ ¬ Q@. `not` is expensive (combinatorial explosion).
 instance (Negable a, SetLike c a, BoundedMeetSemiLattice a) => Negable (Disjunction c a) where
   not (Disjunction as) = Disjunction $ singleton $ meets $ endoMap not as
 

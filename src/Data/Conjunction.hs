@@ -44,7 +44,7 @@ instance (SetLike c a, JoinSemiLattice a) => JoinSemiLattice (Conjunction c a) w
 instance (SetLike c a, BoundedJoinSemiLattice a) => BoundedJoinSemiLattice (Conjunction c a) where
   bottom = Conjunction $ singleton bottom
 
--- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q. This is operation (combinatorial explosion).
+-- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q@. `not` is expensive (combinatorial explosion).
 instance (Negable a, SetLike c a, BoundedJoinSemiLattice a) => Negable (Conjunction c a) where
   not (Conjunction as) = Conjunction $ singleton $ joins $ endoMap not as
 

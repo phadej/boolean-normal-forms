@@ -1,6 +1,7 @@
 {-# LANGUAGE Trustworthy #-}
 {-# LANGUAGE AutoDeriveTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# OPTIONS -fno-warn-orphans #-}
 --------------------------------------------------------------------
@@ -26,6 +27,11 @@ module Algebra.Lattice.Extras (
   meets,
   -- * Extra functions
   fromBool,
+  -- * Free structures
+  FreeLattice(..),
+  FreeLevitated,
+  FreeDropped,
+  FreeLifted,
   -- * Module re-exports
   module Algebra.Lattice
 ) where
@@ -39,6 +45,10 @@ import Data.Semigroup
 import Data.Foldable
 import Data.Traversable
 import GHC.Generics
+
+import Algebra.Lattice.Dropped (Dropped)
+import Algebra.Lattice.Levitated (Levitated)
+import Algebra.Lattice.Lifted (Lifted)
 
 infixr 2 \/
 infixr 3 /\
@@ -257,3 +267,23 @@ meets = getMeet . foldMap Meet
 fromBool :: BoundedLattice b => Bool -> b
 fromBool True  = top
 fromBool False = bottom
+
+-- | Free lattice. Forms a binary tree.
+data FreeLattice a = FreeValue a
+                   | FreeMeet (FreeLattice a) (FreeLattice a)
+                   | FreeJoin (FreeLattice a) (FreeLattice a)
+  deriving (Eq, Ord, Show, Read, Functor)
+
+instance JoinSemiLattice (FreeLattice a) where
+  join = FreeJoin
+
+instance MeetSemiLattice (FreeLattice a) where
+  meet = FreeMeet
+
+instance Lattice (FreeLattice a) where
+
+type FreeDropped a = Dropped (FreeLattice a)
+type FreeLifted a = Lifted (FreeLattice a)
+
+-- | Free bounded lattice.
+type FreeLevitated a = Levitated (FreeLattice a)
