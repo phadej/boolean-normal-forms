@@ -8,14 +8,14 @@
 --
 --------------------------------------------------------------------
 module Algebra.Heyting (
-  Heyting,
+  Heyting(..),
   module Algebra.Lattice.Extras
   ) where
 
 import Algebra.Lattice.Extras
 
 infixr 1 ~>
-infixr 1 <~>
+infix 1 <~>
 
 -- | Intuitionistic logic.
 class BoundedLattice a => Heyting a where
@@ -35,4 +35,3 @@ instance Heyting Bool where
 
 instance (Heyting a, Heyting b) => Heyting (a, b) where
   (a, b) ~> (c, d) = (a ~> c, b ~> d)
-

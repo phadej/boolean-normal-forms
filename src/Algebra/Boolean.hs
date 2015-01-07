@@ -13,6 +13,7 @@ module Algebra.Boolean (
   any,
   and,
   or,
+  implication,
   -- * Module re-exports
   module Algebra.Heyting,
   module Algebra.Negable
@@ -41,18 +42,22 @@ class (Heyting b, Negable b) => Boolean b where
 instance Boolean Bool where
 instance (Boolean a, Boolean b) => Boolean (a, b) where
 
--- | `meets . map f`
+-- | `meets . map f`,
 all :: (Boolean b, Foldable f) => (a -> b) -> f a -> b
 all f = getMeet . foldMap (Meet . f)
 
--- | `joins . map f`
+-- | `joins . map f`,
 any :: (Boolean b, Foldable f) => (a -> b) -> f a -> b
 any f = getJoin . foldMap (Join . f)
 
--- | Alias for `meets`
+-- | Alias for `meets`,
 and :: (Boolean a, Foldable f) => f a -> a
 and = meets
 
--- | Alias for `joins`
+-- | Alias for `joins`,
 or :: (Boolean a, Foldable f) => f a -> a
 or = joins
+
+-- | Implication.
+implication :: Boolean b => b -> b -> b
+implication a b = not a || b
