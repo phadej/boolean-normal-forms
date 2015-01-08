@@ -21,7 +21,8 @@ import Data.Monoid
 import Data.Typeable
 import Algebra.Lattice.Extras
 
-import Algebra.Lattice.Levitated
+import qualified Algebra.Lattice.Levitated as L
+import qualified Algebra.Lattice.Extras.Levitated as EL
 
 import Prelude hiding (not)
 import qualified Prelude as P
@@ -80,10 +81,15 @@ instance Negable a => Negable (FreeLattice a) where
   not (FreeMeet a b)  = FreeJoin (not a) (not b)
   not (FreeJoin a b)  = FreeMeet (not a) (not b)
 
-instance Negable a => Negable (Levitated a) where
-  not (Top)         = Bottom
-  not (Bottom)      = Top
-  not (Levitate a)  = Levitate (not a)
+instance Negable a => Negable (L.Levitated a) where
+  not (L.Top)         = L.Bottom
+  not (L.Bottom)      = L.Top
+  not (L.Levitate a)  = L.Levitate (not a)
+
+instance Negable a => Negable (EL.Levitated a) where
+  not (EL.Top)         = EL.Bottom
+  not (EL.Bottom)      = EL.Top
+  not (EL.Levitate a)  = EL.Levitate (not a)
 
 instance Arbitrary a => Arbitrary (Neg a) where
   arbitrary = f <$> arbitrary <*> arbitrary

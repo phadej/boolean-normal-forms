@@ -6,8 +6,14 @@ import Test.Tasty.QuickCheck as QC
 import Prelude hiding (not)
 import Algebra.Boolean
 
-doubleNegationProp :: Negable a => (a -> a -> Bool) -> a -> Bool
-doubleNegationProp eq x = not (not x) `eq` x
+import Debug.Trace
+
+debug x = traceShow x x
+
+doubleNegationProp :: (Show a, Negable a) => (a -> a -> Bool) -> a -> Bool
+doubleNegationProp eq x = lhs `eq` rhs
+  where rhs = not (not x)
+        lhs = x
 
 negableLaws :: (Arbitrary a, Show a, Negable a) => (a -> a -> Bool) -> TestTree
 negableLaws eq = testGroup "Negable laws"

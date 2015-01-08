@@ -28,19 +28,19 @@ module Algebra.Boolean.NormalForms (
   lowerCNF,
   CNF',
   -- * Module re-exports
-  module Algebra.Lattice.Levitated,
+  module Algebra.Lattice.Extras.Levitated,
   module Algebra.Boolean,
   module Data.Disjunction,
   module Data.Conjunction
   ) where
 
-import Algebra.Lattice.Levitated
-import Algebra.Boolean
+import Algebra.Lattice.Extras.Levitated
+import Algebra.Boolean hiding (liftLevitated, lowerLevitated, FreeBoundedLattice)
 import Data.Disjunction
 import Data.Conjunction
 import Data.SetLike
 
-type NNF a = Levitated (FreeLattice (Neg a))
+type NNF a = FreeBoundedLattice (Neg a)
 
 liftNNF :: a -> NNF a
 liftNNF = liftLevitated . liftFreeLattice . liftNeg

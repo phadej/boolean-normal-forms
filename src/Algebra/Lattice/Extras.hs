@@ -33,7 +33,7 @@ module Algebra.Lattice.Extras (
   FreeLattice(..),
   liftFreeLattice,
   lowerFreeLattice,
-  FreeLevitated,
+  FreeBoundedLattice,
   FreeDropped,
   FreeLifted,
   -- * Module re-exports
@@ -292,8 +292,6 @@ instance Show a => Show (Levitated a) where
   show Levitated.Bottom = "Bottom"
   show (Levitated.Levitate a) = "Levitate " ++ show a
 
-instance Lattice a => BoundedLattice (Levitated a) where
-
 -- | Free lattice. Forms a binary tree.
 data FreeLattice a = FreeValue a
                    | FreeMeet (FreeLattice a) (FreeLattice a)
@@ -312,7 +310,7 @@ type FreeDropped a = Dropped (FreeLattice a)
 type FreeLifted a = Lifted (FreeLattice a)
 
 -- | Free bounded lattice.
-type FreeLevitated a = Levitated (FreeLattice a)
+type FreeBoundedLattice a = Levitated (FreeLattice a)
 
 liftFreeLattice :: a -> FreeLattice a
 liftFreeLattice = FreeValue

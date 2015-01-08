@@ -18,8 +18,12 @@ import Data.Function (on)
 
 import Algebra.Boolean.NormalForms
 
-instance Arbitrary a => Arbitrary (NNF a) where
-  arbitrary = lowerBoolean <$> arbitrary
+import Debug.Trace
+
+debug x = traceShow x x
+
+instance (Show a, Arbitrary a) => Arbitrary (NNF a) where
+  arbitrary = lowerBoolean . (fmap liftNNF) <$> arbitrary
 
 tests :: TestTree
 tests = testGroup "NNF tree implementation"

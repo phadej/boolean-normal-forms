@@ -14,29 +14,60 @@
 --
 --------------------------------------------------------------------
 module Algebra.Boolean (
+  -- * Boolean
   Boolean(..),
   all,
   any,
   and,
   or,
   implication,
+  -- * Heyting
+  Heyting(..),
   -- * Free structure
   FreeBoolean(..),
   liftBoolean,
   lowerBoolean,
   -- * Module re-exports
-  module Algebra.Heyting,
+  module Algebra.Lattice.Extras,
   module Algebra.Negable
   ) where
 
 import GHC.Generics
-import Algebra.Heyting
 import Algebra.Negable
-import Algebra.Lattice.Levitated
+import Algebra.Lattice.Extras
+import Algebra.Lattice.Extras.Levitated
 import Data.Foldable hiding (all, any, and, or)
 import Prelude hiding ((&&), (||), not, all, any, and, or)
 import Control.Applicative
 import Test.QuickCheck
+
+infixr 1 ~>
+infix 1 <~>
+
+-- | Intuitionistic logic.
+class BoundedLattice a => Heyting a where
+  -- | Implication.
+  (~>) :: a -> a -> a
+
+  -- | Equivalence.
+  (<~>) :: a -> a -> a
+  a <~> b = a ~> b /\ b ~> a
+
+  -- | Negation.
+  negation :: a -> a
+  negation x = x ~> bottom
+
+instance Heyting Bool where
+  a ~> b = not a \/ b
+
+instance (Heyting a, Heyting b) => Heyting (a, b) where
+  (a, b) ~> (c, d) = (a ~> c, b ~> d)
+
+instance (Negable a, Lattice a) => Heyting (Levitated a) where
+  negation = not
+  (~>) = implication
+
+-- Boolean
 
 class (Heyting b, Negable b) => Boolean b where
   true :: b
@@ -55,10 +86,6 @@ class (Heyting b, Negable b) => Boolean b where
 
 instance Boolean Bool where
 instance (Boolean a, Boolean b) => Boolean (a, b) where
-
-instance (Negable a, Lattice a) => Heyting (Levitated a) where
-  negation = not
-  (~>) = implication
 
 instance (Negable a, Lattice a) => Boolean (Levitated a) where
 

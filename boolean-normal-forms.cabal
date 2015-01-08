@@ -18,9 +18,9 @@ library
   exposed-modules:
     Algebra.Boolean.NormalForms,
     Algebra.Boolean,
-    Algebra.Heyting,
     Algebra.Negable,
     Algebra.Lattice.Extras,
+    Algebra.Lattice.Extras.Levitated,
     Data.SetLike,
     Data.Conjunction,
     Data.Disjunction,
