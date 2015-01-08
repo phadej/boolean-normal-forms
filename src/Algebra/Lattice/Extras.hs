@@ -287,6 +287,13 @@ instance Functor Levitated where
   fmap _ Levitated.Bottom = Levitated.Bottom 
   fmap f (Levitated.Levitate a) = Levitated.Levitate (f a)
 
+instance Show a => Show (Levitated a) where
+  show Levitated.Top = "Top"
+  show Levitated.Bottom = "Bottom"
+  show (Levitated.Levitate a) = "Levitate " ++ show a
+
+instance Lattice a => BoundedLattice (Levitated a) where
+
 -- | Free lattice. Forms a binary tree.
 data FreeLattice a = FreeValue a
                    | FreeMeet (FreeLattice a) (FreeLattice a)

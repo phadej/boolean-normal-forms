@@ -32,8 +32,11 @@ module Algebra.Boolean (
 import GHC.Generics
 import Algebra.Heyting
 import Algebra.Negable
+import Algebra.Lattice.Levitated
 import Data.Foldable hiding (all, any, and, or)
 import Prelude hiding ((&&), (||), not, all, any, and, or)
+import Control.Applicative
+import Test.QuickCheck
 
 class (Heyting b, Negable b) => Boolean b where
   true :: b
@@ -52,6 +55,12 @@ class (Heyting b, Negable b) => Boolean b where
 
 instance Boolean Bool where
 instance (Boolean a, Boolean b) => Boolean (a, b) where
+
+instance (Negable a, Lattice a) => Heyting (Levitated a) where
+  negation = not
+  (~>) = implication
+
+instance (Negable a, Lattice a) => Boolean (Levitated a) where
 
 -- | `meets . map f`.
 all :: (Boolean b, Foldable f) => (a -> b) -> f a -> b
@@ -116,3 +125,18 @@ lowerBoolean FBFalse = false
 lowerBoolean (FBNot x) = not (lowerBoolean x)
 lowerBoolean (FBAnd x y) = lowerBoolean x && lowerBoolean y
 lowerBoolean (FBOr x y) = lowerBoolean x || lowerBoolean y
+
+instance Arbitrary a => Arbitrary (FreeBoolean a) where
+  arbitrary = sized arbitrary'
+    where arbitrary' 0 = frequency [
+            (10, FBValue <$> arbitrary),
+            (1, pure FBTrue),
+            (1, pure FBFalse)
+            ]
+          arbitrary' n = oneof [
+            FBValue <$> arbitrary,
+            FBNot <$> arbitrary'',
+            FBAnd <$> arbitrary'' <*> arbitrary'',
+            FBOr <$> arbitrary'' <*> arbitrary''
+            ]
+            where arbitrary'' = arbitrary' $ n `div` 2

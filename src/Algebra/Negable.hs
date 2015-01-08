@@ -25,6 +25,8 @@ import Algebra.Lattice.Levitated
 
 import Prelude hiding (not)
 import qualified Prelude as P
+import Control.Applicative
+import Test.QuickCheck
 
 -- | Class to represent invertible values.
 --
@@ -82,3 +84,8 @@ instance Negable a => Negable (Levitated a) where
   not (Top)         = Bottom
   not (Bottom)      = Top
   not (Levitate a)  = Levitate (not a)
+
+instance Arbitrary a => Arbitrary (Neg a) where
+  arbitrary = f <$> arbitrary <*> arbitrary
+    where f True  = Pos
+          f False = Neg

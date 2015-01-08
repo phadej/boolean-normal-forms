@@ -1,5 +1,6 @@
 module Main (main) where
 
+import qualified NNF
 import qualified NNFTree
 import qualified NNFSet
 import qualified DNFList
@@ -15,6 +16,7 @@ main = defaultMain tests
 
 tests :: TestTree
 tests = testGroup "Tests" [
+  NNF.tests,
   NNFTree.tests,
   NNFSet.tests,
   CNFList.tests,
