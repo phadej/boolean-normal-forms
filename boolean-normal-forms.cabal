@@ -66,17 +66,9 @@ test-suite test
   main-is:             Main.hs
   other-modules:
     BooleanLaws,
-    CNFList,
-    CNFSet,
-    DNFList,
-    DNFSet,
-    FreeBoolean,
-    FreeBooleanTests,
     NegableLaws,
-    NegableLawsNew,
-    NNFSet,
-    NNFTree,
-    SimplifyLaws
+    NNF,
+    DNF
   ghc-options:
     -Wall
     -O2

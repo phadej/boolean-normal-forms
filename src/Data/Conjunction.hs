@@ -47,13 +47,13 @@ instance (SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => BoundedJoinSemiL
   bottom = Conjunction $ singleton bottom
 
 -- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q@. `not` is expensive (combinatorial explosion).
-instance (Negable a, SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => Negable (Conjunction c a) where
-  not (Conjunction as) = Conjunction $ singleton $ joins $ endoMap not as
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Conjunction c a), BoundedJoinSemiLattice a) => Negable (Conjunction c a) where
+  not = joins . endoMap (liftConjunction . not) . getConjunction
 
 instance (SetLike c, SetLikeC c a, JoinSemiLattice a) => Lattice (Conjunction c a) where
 instance (SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => BoundedLattice (Conjunction c a) where
-instance (Negable a, SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => Boolean (Conjunction c a) where
-instance (Negable a, SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => Heyting (Conjunction c a) where
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Conjunction c a), BoundedJoinSemiLattice a) => Boolean (Conjunction c a) where
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Conjunction c a), BoundedJoinSemiLattice a) => Heyting (Conjunction c a) where
   (~>) = implication
   negation = not
 

@@ -49,6 +49,7 @@ import Data.Semigroup
 import Data.Foldable
 import Data.Traversable
 import GHC.Generics
+import Test.QuickCheck
 
 import Algebra.Lattice.Dropped (Dropped)
 import Algebra.Lattice.Lifted (Lifted)
@@ -308,6 +309,16 @@ instance Lattice (FreeLattice a) where
 
 type FreeDropped a = Dropped (FreeLattice a)
 type FreeLifted a = Lifted (FreeLattice a)
+
+instance Arbitrary a => Arbitrary (FreeLattice a) where
+  arbitrary = sized arbitrary'
+    where arbitrary' 0 = FreeValue <$> arbitrary
+          arbitrary' n = oneof [
+            FreeValue <$> arbitrary,
+            FreeMeet <$> arbitrary'' <*> arbitrary'',
+            FreeJoin <$> arbitrary'' <*> arbitrary''
+            ]
+            where arbitrary'' = arbitrary' $ n `div` 2
 
 -- | Free bounded lattice.
 type FreeBoundedLattice a = Levitated (FreeLattice a)

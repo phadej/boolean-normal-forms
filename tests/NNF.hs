@@ -1,14 +1,11 @@
 {-# LANGUAGE TypeSynonymInstances #-}
 {-# LANGUAGE FlexibleInstances #-}
--- TODO: write Arbitrary instance for NNF
+
 module NNF (tests) where
 
---import BooleanLaws
-import NegableLawsNew
---import SimplifyLaws
---import BooleanModelLaws
-
---import FreeBoolean
+import LatticeLaws
+import BooleanLaws
+import NegableLaws
 
 import Test.Tasty
 import Test.QuickCheck
@@ -18,23 +15,19 @@ import Data.Function (on)
 
 import Algebra.Boolean.NormalForms
 
-import Debug.Trace
-
-debug x = traceShow x x
-
 instance (Show a, Arbitrary a) => Arbitrary (NNF a) where
   arbitrary = lowerBoolean . (fmap liftNNF) <$> arbitrary
 
 tests :: TestTree
 tests = testGroup "NNF tree implementation"
-  [ negableLaws eq ]
+  [ negableLaws eq
+  , latticeLaws eq
+  , booleanLaws eq
+  ]
+
 {-
-  [ monotoneLaws eq
-  , nonMonotoneLaws eq
-  , negableLaws eq
   , simplifyLaws (undefined :: NNF (Either Bool Bool))
   , booleanModelLaws (undefined :: NNF (Either Bool Bool))
-  ]
 -}
 
 eq :: NNF Bool -> NNF Bool -> Bool

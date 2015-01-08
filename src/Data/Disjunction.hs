@@ -47,13 +47,13 @@ instance (SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => BoundedMeetSemiL
   top = Disjunction $ singleton top
 
 -- | Uses De Morgan's law @¬ (P ∨ Q) = ¬ P ∧ ¬ Q@. `not` is expensive (combinatorial explosion).
-instance (Negable a, SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => Negable (Disjunction c a) where
-  not (Disjunction as) = Disjunction $ singleton $ meets $ endoMap not as
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Disjunction c a), BoundedMeetSemiLattice a) => Negable (Disjunction c a) where
+  not = meets . endoMap (liftDisjunction . not) . getDisjunction
 
 instance (SetLike c, SetLikeC c a, MeetSemiLattice a) => Lattice (Disjunction c a) where
 instance (SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => BoundedLattice (Disjunction c a) where
-instance (Negable a, SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => Boolean (Disjunction c a) where
-instance (Negable a, SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => Heyting (Disjunction c a) where
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Disjunction c a), BoundedMeetSemiLattice a) => Boolean (Disjunction c a) where
+instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Disjunction c a), BoundedMeetSemiLattice a) => Heyting (Disjunction c a) where
   (~>) = implication
   negation = not
 

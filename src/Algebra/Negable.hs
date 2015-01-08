@@ -39,10 +39,6 @@ class Negable x where
   -- | Negate the value.
   not :: x -> x
 
-instance Negable (Neg a) where
-  not (Pos x)  = Neg x
-  not (Neg x)  = Pos x
-
 instance Negable Bool where
   not = P.not
 
@@ -67,6 +63,10 @@ data Neg a = Pos a -- ^ Positive value
            | Neg a -- ^ Negative value
   deriving (Eq, Ord, Show, Read, Functor, Typeable)
 
+instance Negable (Neg a) where
+  not (Pos x)  = Neg x
+  not (Neg x)  = Pos x
+
 liftNeg :: a -> Neg a
 liftNeg = Pos
 
@@ -77,7 +77,7 @@ lowerNeg (Neg a) = not a
 -- Lattices
 
 instance Negable a => Negable (FreeLattice a) where
-  not (FreeValue a)   = FreeValue a
+  not (FreeValue a)   = FreeValue (not a)
   not (FreeMeet a b)  = FreeJoin (not a) (not b)
   not (FreeJoin a b)  = FreeMeet (not a) (not b)
 
