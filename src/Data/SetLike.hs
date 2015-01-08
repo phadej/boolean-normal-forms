@@ -1,5 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 --------------------------------------------------------------------
 -- |
 -- Copyright :  © Oleg Grenrus 2014
@@ -11,21 +13,25 @@
 --------------------------------------------------------------------
 module Data.SetLike where
 
+import GHC.Exts (Constraint)
 import Control.Applicative
 import Data.Foldable
 import Data.Set (Set)
 import qualified Data.Set as Set
 
 -- | This class provides abstraction over small set of set operations.
-class Foldable s => SetLike s a where
+class Foldable s => SetLike s where
+  type SetLikeC s a :: Constraint
+  type SetLikeC s a = ()
+
   empty :: s a
   singleton :: a -> s a
-  union :: s a -> s a -> s a
+  union :: SetLikeC s a => s a -> s a -> s a
   null :: s a -> Bool
-  endoMap :: (a -> a) -> s a -> s a
-  endoMap2 :: (a -> a -> a) -> s a -> s a -> s a
+  endoMap :: (SetLikeC s b) => (a -> b) -> s a -> s b
+  endoMap2 :: (SetLikeC s c) => (a -> b -> c) -> s a -> s b -> s c
 
-instance SetLike [] a where
+instance SetLike [] where
   empty = []
   singleton x = [x]
   union = (++)
@@ -33,7 +39,9 @@ instance SetLike [] a where
   endoMap = Prelude.map
   endoMap2 = liftA2
 
-instance Ord a => SetLike Set a where
+instance SetLike Set where
+  type SetLikeC Set a = Ord a
+
   empty = Set.empty
   singleton = Set.singleton
   union = Set.union

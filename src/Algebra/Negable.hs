@@ -10,8 +10,10 @@
 --
 --------------------------------------------------------------------
 module Algebra.Negable (
+  Negable(..),
   Neg(..),
-  Negable(..)
+  liftNeg,
+  lowerNeg
 )
   where
 
@@ -61,6 +63,13 @@ instance (Negable a, Negable b) => Negable (Either a b) where
 data Neg a = Pos a -- ^ Positive value
            | Neg a -- ^ Negative value
   deriving (Eq, Ord, Show, Read, Functor, Typeable)
+
+liftNeg :: a -> Neg a
+liftNeg = Pos
+
+lowerNeg :: Negable a => Neg a -> a
+lowerNeg (Pos a) = a
+lowerNeg (Neg a) = not a
 
 -- Lattices
 

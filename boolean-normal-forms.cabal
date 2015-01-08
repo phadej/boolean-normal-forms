@@ -17,6 +17,7 @@ extra-doc-files:      doc-formulae/*.svg
 library
   exposed-modules:
     Algebra.Boolean,
+    Algebra.Boolean.NormalForms,
     Algebra.Heyting,
     Algebra.Negable,
     Algebra.Lattice.Extras,

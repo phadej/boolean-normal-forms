@@ -27,8 +27,12 @@ module Algebra.Lattice.Extras (
   meets,
   -- * Extra functions
   fromBool,
+  liftLevitated,
+  lowerLevitated,
   -- * Free structures
   FreeLattice(..),
+  liftFreeLattice,
+  lowerFreeLattice,
   FreeLevitated,
   FreeDropped,
   FreeLifted,
@@ -47,8 +51,10 @@ import Data.Traversable
 import GHC.Generics
 
 import Algebra.Lattice.Dropped (Dropped)
-import Algebra.Lattice.Levitated (Levitated)
 import Algebra.Lattice.Lifted (Lifted)
+
+import Algebra.Lattice.Levitated (Levitated)
+import qualified Algebra.Lattice.Levitated as Levitated
 
 infixr 2 \/
 infixr 3 /\
@@ -268,6 +274,19 @@ fromBool :: BoundedLattice b => Bool -> b
 fromBool True  = top
 fromBool False = bottom
 
+liftLevitated :: a -> Levitated a
+liftLevitated = Levitated.Levitate
+
+lowerLevitated :: BoundedLattice a => Levitated a -> a
+lowerLevitated Levitated.Top          = top
+lowerLevitated Levitated.Bottom       = bottom
+lowerLevitated (Levitated.Levitate a) = a
+
+instance Functor Levitated where
+  fmap _ Levitated.Top = Levitated.Top
+  fmap _ Levitated.Bottom = Levitated.Bottom 
+  fmap f (Levitated.Levitate a) = Levitated.Levitate (f a)
+
 -- | Free lattice. Forms a binary tree.
 data FreeLattice a = FreeValue a
                    | FreeMeet (FreeLattice a) (FreeLattice a)
@@ -287,3 +306,11 @@ type FreeLifted a = Lifted (FreeLattice a)
 
 -- | Free bounded lattice.
 type FreeLevitated a = Levitated (FreeLattice a)
+
+liftFreeLattice :: a -> FreeLattice a
+liftFreeLattice = FreeValue
+
+lowerFreeLattice :: Lattice a => FreeLattice a -> a
+lowerFreeLattice (FreeValue a)   = a
+lowerFreeLattice (FreeMeet a b)  = lowerFreeLattice a /\ lowerFreeLattice b
+lowerFreeLattice (FreeJoin a b)  = lowerFreeLattice a \/ lowerFreeLattice b
