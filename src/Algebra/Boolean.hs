@@ -2,17 +2,15 @@
 {-# LANGUAGE AutoDeriveTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
---------------------------------------------------------------------
 -- |
--- Copyright :  © Oleg Grenrus 2014
--- License   :  MIT
--- Maintainer:  Oleg Grenrus <oleg.grenrus@iki.fi>
--- Stability :  experimental
--- Portability: non-portable
+-- Module      : Algebra.Boolean
+-- Copyright   : (c) 2014-2015 Oleg Grenrus
+-- License     : MIT
+-- Maintainer  : Oleg Grenrus <oleg.grenrus@iki.fi>
 --
---------------------------------------------------------------------
 module Algebra.Boolean (
   -- * Boolean
   Boolean(..),
@@ -25,21 +23,24 @@ module Algebra.Boolean (
   Heyting(..),
   -- * Free structure
   FreeBoolean(..),
-  liftBoolean,
-  lowerBoolean,
+  liftFreeBoolean,
+  retractFreeBoolean,
   -- * Module re-exports
-  module Algebra.Lattice.Extras,
+  module Algebra.Lattice,
   module Algebra.Negable
   ) where
 
-import GHC.Generics
+import Algebra.Lattice
+import Algebra.Lattice.Levitated
 import Algebra.Negable
-import Algebra.Lattice.Extras
-import Algebra.Lattice.Extras.Levitated
-import Data.Foldable hiding (all, any, and, or)
-import Prelude hiding ((&&), (||), not, all, any, and, or)
 import Control.Applicative
+import Control.Monad
+import Data.Foldable hiding (all, any, and, or)
+import GHC.Generics (Generic, Generic1)
+import Prelude hiding ((&&), (||), not, all, any, and, or)
 import Test.QuickCheck
+
+import Data.Traversable (Traversable)
 
 infixr 1 ~>
 infix 1 <~>
@@ -116,7 +117,20 @@ data FreeBoolean a = FBValue a
                    | FBNot (FreeBoolean a)
                    | FBAnd (FreeBoolean a) (FreeBoolean a)
                    | FBOr (FreeBoolean a) (FreeBoolean a)
-  deriving (Eq, Ord, Show, Read, Functor, Generic, Generic1)
+  deriving (Eq, Ord, Show, Read, Functor, Foldable, Traversable, Generic, Generic1)
+
+instance Applicative FreeBoolean where
+  pure = return
+  (<*>) = ap
+
+instance Monad FreeBoolean where
+  return = FBValue
+  FBValue x >>= f = f x
+  FBTrue    >>= _ = FBTrue
+  FBFalse   >>= _ = FBFalse
+  FBNot x   >>= f = FBNot (x >>= f)
+  FBAnd x y >>= f = FBAnd (x >>= f) (y >>= f)
+  FBOr x y  >>= f = FBOr (x >>= f) (y >>= f)
 
 instance JoinSemiLattice (FreeBoolean a) where
   join = FBOr
@@ -142,16 +156,16 @@ instance Negable (FreeBoolean a) where
 
 instance Boolean (FreeBoolean a) where
 
-liftBoolean :: a -> FreeBoolean a
-liftBoolean = FBValue
+liftFreeBoolean :: a -> FreeBoolean a
+liftFreeBoolean = FBValue
 
-lowerBoolean :: Boolean a => FreeBoolean a -> a
-lowerBoolean (FBValue x) = x
-lowerBoolean FBTrue = true
-lowerBoolean FBFalse = false
-lowerBoolean (FBNot x) = not (lowerBoolean x)
-lowerBoolean (FBAnd x y) = lowerBoolean x && lowerBoolean y
-lowerBoolean (FBOr x y) = lowerBoolean x || lowerBoolean y
+retractFreeBoolean :: Boolean a => FreeBoolean a -> a
+retractFreeBoolean (FBValue x) = x
+retractFreeBoolean FBTrue = true
+retractFreeBoolean FBFalse = false
+retractFreeBoolean (FBNot x) = not (retractFreeBoolean x)
+retractFreeBoolean (FBAnd x y) = retractFreeBoolean x && retractFreeBoolean y
+retractFreeBoolean (FBOr x y) = retractFreeBoolean x || retractFreeBoolean y
 
 instance Arbitrary a => Arbitrary (FreeBoolean a) where
   arbitrary = sized arbitrary'

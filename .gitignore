@@ -1,4 +1,5 @@
 dist/
 test.tix
+.stack-work/
 .cabal-sandbox/
 cabal.sandbox.config

@@ -1,33 +1,39 @@
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveDataTypeable #-}
---------------------------------------------------------------------
+{-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE Safe #-}
 -- |
--- Copyright :  © Oleg Grenrus 2014
--- License   :  MIT
--- Maintainer:  Oleg Grenrus <oleg.grenrus@iki.fi>
--- Stability :  experimental
--- Portability: non-portable
+-- Module      : Algebra.Negable
+-- Copyright   : (c) 2014-2015 Oleg Grenrus
+-- License     : MIT
+-- Maintainer  : Oleg Grenrus <oleg.grenrus@iki.fi>
 --
---------------------------------------------------------------------
 module Algebra.Negable (
   Negable(..),
   Neg(..),
   liftNeg,
-  lowerNeg
+  retractNeg
 )
   where
 
-import Data.Monoid
-import Data.Typeable
-import Algebra.Lattice.Extras
+import           Algebra.Lattice.FreeLattice
+import           Control.Monad
+import           Data.Monoid
+import           Data.Typeable
+import           GHC.Generics (Generic, Generic1)
 
+import Algebra.Lattice
 import qualified Algebra.Lattice.Levitated as L
-import qualified Algebra.Lattice.Extras.Levitated as EL
 
-import Prelude hiding (not)
+import           Prelude hiding (not)
 import qualified Prelude as P
-import Control.Applicative
-import Test.QuickCheck
+import           Control.Applicative
+import           Test.QuickCheck
+
+import           Data.Foldable (Foldable)
+import           Data.Traversable (Traversable)
 
 -- | Class to represent invertible values.
 --
@@ -61,18 +67,49 @@ instance (Negable a, Negable b) => Negable (Either a b) where
 -- | Free 'Negable'.
 data Neg a = Pos a -- ^ Positive value
            | Neg a -- ^ Negative value
-  deriving (Eq, Ord, Show, Read, Functor, Typeable)
+  deriving (Eq, Ord, Show, Read, Functor, Foldable, Traversable, Typeable, Generic, Generic1)
 
 instance Negable (Neg a) where
   not (Pos x)  = Neg x
   not (Neg x)  = Pos x
 
+instance Applicative Neg where
+  pure = return
+  (<*>) = ap
+
+instance Monad Neg where
+  return = Pos
+  x >>= f = retractNeg (fmap f x)
+
+instance (Lattice a, Negable a) => JoinSemiLattice (Neg a) where
+ Pos a \/ Pos b = Pos (a \/ b)
+ Neg a \/ Neg b = Neg (a /\ b)
+ Pos a \/ Neg b = Pos (a \/ not b)
+ Neg a \/ Pos b = Pos (not a \/ b)
+
+instance (Lattice a, Negable a) => MeetSemiLattice (Neg a) where
+ Pos a /\ Pos b = Pos (a /\ b)
+ Neg a /\ Neg b = Neg (a \/ b)
+ Pos a /\ Neg b = Pos (a /\ not b)
+ Neg a /\ Pos b = Pos (not a /\ b)
+ 
+instance (BoundedLattice a, Negable a) => BoundedJoinSemiLattice (Neg a) where
+  bottom = Pos bottom
+instance (BoundedLattice a, Negable a) => BoundedMeetSemiLattice (Neg a) where                  
+  top = Pos top
+
+instance (Lattice a, Negable a) => Lattice (Neg a)
+instance (BoundedLattice a, Negable a) => BoundedLattice (Neg a)
+
 liftNeg :: a -> Neg a
 liftNeg = Pos
 
-lowerNeg :: Negable a => Neg a -> a
-lowerNeg (Pos a) = a
-lowerNeg (Neg a) = not a
+-- | Interpret 'Neg a' using the 'Negable' of 'a'.
+--
+-- It's also monadic 'join'
+retractNeg :: Negable a => Neg a -> a
+retractNeg (Pos a) = a
+retractNeg (Neg a) = not a
 
 -- Lattices
 
@@ -85,11 +122,6 @@ instance Negable a => Negable (L.Levitated a) where
   not (L.Top)         = L.Bottom
   not (L.Bottom)      = L.Top
   not (L.Levitate a)  = L.Levitate (not a)
-
-instance Negable a => Negable (EL.Levitated a) where
-  not (EL.Top)         = EL.Bottom
-  not (EL.Bottom)      = EL.Top
-  not (EL.Levitate a)  = EL.Levitate (not a)
 
 instance Arbitrary a => Arbitrary (Neg a) where
   arbitrary = f <$> arbitrary <*> arbitrary

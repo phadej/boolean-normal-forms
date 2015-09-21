@@ -3,7 +3,7 @@ module LatticeLaws (latticeLaws) where
 import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 
-import Algebra.Lattice.Extras
+import Algebra.Lattice
 
 associativityJoinProp :: JoinSemiLattice a => (a -> a -> Bool) -> a -> a -> a -> Bool
 associativityJoinProp eq x y z = (x \/ (y \/ z)) `eq` ((x \/ y) \/ z)

@@ -1,0 +1,9 @@
+flags: {}
+packages:
+- '.'
+extra-deps:
+- lattices-1.4
+- universe-base-1.0.2.1
+- universe-instances-base-1.0
+- universe-reverse-instances-1.0
+resolver: lts-2.22

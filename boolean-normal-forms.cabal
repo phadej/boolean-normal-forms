@@ -12,31 +12,17 @@ category:            Data
 build-type:          Simple
 cabal-version:       >=1.10
 extra-source-files:  README.md
-extra-doc-files:      doc-formulae/*.svg
+extra-doc-files:     doc-formulae/*.svg
 
 library
   exposed-modules:
     Algebra.Boolean.NormalForms,
     Algebra.Boolean,
     Algebra.Negable,
-    Algebra.Lattice.Extras,
-    Algebra.Lattice.Extras.Levitated,
+    Algebra.Lattice.FreeLattice,
     Data.SetLike,
     Data.Conjunction,
-    Data.Disjunction,
-    Data.Algebra.Boolean.NormalForm,
-    Data.Algebra.Boolean.FreeBoolean,
-    Data.Algebra.Boolean.NNF,
-    Data.Algebra.Boolean.DNF,
-    Data.Algebra.Boolean.CNF,
-    Data.Algebra.Boolean.Negable,
-    Data.Algebra.Boolean.CoBoolean,
-    Data.Algebra.Boolean.NNF.Set,
-    Data.Algebra.Boolean.NNF.Tree,
-    Data.Algebra.Boolean.DNF.List,
-    Data.Algebra.Boolean.DNF.Set,
-    Data.Algebra.Boolean.CNF.List,
-    Data.Algebra.Boolean.CNF.Set
+    Data.Disjunction
   other-extensions:
     DeriveFunctor,
     DeriveDataTypeable,
@@ -46,18 +32,16 @@ library
   build-depends:
     base >=4.6 && <4.10,
     containers >=0.5 && <0.6,
-    lattices >=1.2 && <1.3,
-    semigroups >=0.16.0.1 && <0.17,
+    lattices >=1.4 && <1.5,
+    semigroups >=0.16 && <0.18,
+    hashable >= 1.2 && <1.3,
     deepseq >=1.3 && <1.5,
-    QuickCheck >=2.7 && <=2.8,
-    cond >=0.4.1 && <0.5
+    QuickCheck >=2.7 && <=2.9,
+    unordered-containers >= 0.2 && <0.3,
+    prelude-extras >=0.4 && <0.5
   default-language:    Haskell2010
-  ghc-options:         -Wall
-                       -O2
-                       -fwarn-tabs
-                       -fspec-constr-count=6
-                       -fmax-simplifier-iterations=10
-                       -fdicts-cheap
+  ghc-options:
+    -Wall
 
 test-suite test
   default-language:    Haskell2010
@@ -66,8 +50,10 @@ test-suite test
   main-is:             Main.hs
   other-modules:
     BooleanLaws,
+    LatticeLaws,
     NegableLaws,
     NNF,
+    CNF,
     DNF
   ghc-options:
     -Wall
@@ -80,4 +66,5 @@ test-suite test
     tasty >=0.8,
     tasty-quickcheck >=0.8.0.2,
     QuickCheck >=2.7 && <=2.8,
+    lattices,
     boolean-normal-forms

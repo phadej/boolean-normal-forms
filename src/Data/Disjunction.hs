@@ -5,15 +5,12 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
---------------------------------------------------------------------
 -- |
--- Copyright :  © Oleg Grenrus 2014
--- License   :  MIT
--- Maintainer:  Oleg Grenrus <oleg.grenrus@iki.fi>
--- Stability :  experimental
--- Portability: non-portable
+-- Module      : Data.Disjunction
+-- Copyright   : (c) 2014-2015 Oleg Grenrus
+-- License     : MIT
+-- Maintainer  : Oleg Grenrus <oleg.grenrus@iki.fi>
 --
---------------------------------------------------------------------
 module Data.Disjunction where
 
 import GHC.Generics
@@ -41,14 +38,14 @@ instance (SetLike c, SetLikeC c a) => Monoid (Disjunction c a) where
   mappend = join
 
 instance (SetLike c, SetLikeC c a, MeetSemiLattice a) => MeetSemiLattice (Disjunction c a) where
-  Disjunction as `meet` Disjunction bs = Disjunction $ endoMap2 meet as bs
+  Disjunction as `meet` Disjunction bs = Disjunction $ liftSet2 meet as bs
 
 instance (SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => BoundedMeetSemiLattice (Disjunction c a) where
   top = Disjunction $ singleton top
 
 -- | Uses De Morgan's law @¬ (P ∨ Q) = ¬ P ∧ ¬ Q@. `not` is expensive (combinatorial explosion).
 instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Disjunction c a), BoundedMeetSemiLattice a) => Negable (Disjunction c a) where
-  not = meets . endoMap (liftDisjunction . not) . getDisjunction
+  not = meets . liftSet (liftDisjunction . not) . getDisjunction
 
 instance (SetLike c, SetLikeC c a, MeetSemiLattice a) => Lattice (Disjunction c a) where
 instance (SetLike c, SetLikeC c a, BoundedMeetSemiLattice a) => BoundedLattice (Disjunction c a) where
@@ -57,8 +54,8 @@ instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Disjunction c a), Boun
   (~>) = implication
   negation = not
 
-lowerDisjunction :: (BoundedJoinSemiLattice a, SetLike c) => Disjunction c a -> a
-lowerDisjunction = getJoin . foldMap Join . getDisjunction
+retractDisjunction :: (BoundedJoinSemiLattice a, SetLike c) => Disjunction c a -> a
+retractDisjunction = getJoin . foldMap Join . getDisjunction
 
 liftDisjunction :: SetLike c => a -> Disjunction c a
 liftDisjunction = Disjunction . singleton

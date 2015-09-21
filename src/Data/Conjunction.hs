@@ -5,15 +5,12 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE UndecidableInstances #-}
---------------------------------------------------------------------
 -- |
--- Copyright :  © Oleg Grenrus 2014
--- License   :  MIT
--- Maintainer:  Oleg Grenrus <oleg.grenrus@iki.fi>
--- Stability :  experimental
--- Portability: non-portable
+-- Module      : Data.Conjunction
+-- Copyright   : (c) 2014-2015 Oleg Grenrus
+-- License     : MIT
+-- Maintainer  : Oleg Grenrus <oleg.grenrus@iki.fi>
 --
---------------------------------------------------------------------
 module Data.Conjunction where
 
 import GHC.Generics
@@ -41,14 +38,14 @@ instance (SetLike c, SetLikeC c a) => Monoid (Conjunction c a) where
   mappend = meet
 
 instance (SetLike c, SetLikeC c a, JoinSemiLattice a) => JoinSemiLattice (Conjunction c a) where
-  Conjunction as `join` Conjunction bs = Conjunction $ endoMap2 join as bs
+  Conjunction as `join` Conjunction bs = Conjunction $ liftSet2 join as bs
 
 instance (SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => BoundedJoinSemiLattice (Conjunction c a) where
   bottom = Conjunction $ singleton bottom
 
 -- | Uses De Morgan's law @¬ (P ∧ Q) = ¬ P ∨ ¬ Q@. `not` is expensive (combinatorial explosion).
 instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Conjunction c a), BoundedJoinSemiLattice a) => Negable (Conjunction c a) where
-  not = joins . endoMap (liftConjunction . not) . getConjunction
+  not = joins . liftSet (liftConjunction . not) . getConjunction
 
 instance (SetLike c, SetLikeC c a, JoinSemiLattice a) => Lattice (Conjunction c a) where
 instance (SetLike c, SetLikeC c a, BoundedJoinSemiLattice a) => BoundedLattice (Conjunction c a) where
@@ -57,8 +54,8 @@ instance (Negable a, SetLike c, SetLikeC c a, SetLikeC c (Conjunction c a), Boun
   (~>) = implication
   negation = not
 
-lowerConjunction :: (BoundedMeetSemiLattice a, SetLike c) => Conjunction c a -> a
-lowerConjunction = getMeet . foldMap Meet . getConjunction
+retractConjunction :: (BoundedMeetSemiLattice a, SetLike c) => Conjunction c a -> a
+retractConjunction = getMeet . foldMap Meet . getConjunction
 
 liftConjunction :: SetLike c => a -> Conjunction c a
 liftConjunction = Conjunction . singleton

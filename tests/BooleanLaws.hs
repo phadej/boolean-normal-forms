@@ -12,9 +12,6 @@ complementationOrProp eq x = (x || not x) `eq` true
 complementationAndProp :: Boolean a => (a -> a -> Bool) -> a -> Bool
 complementationAndProp eq x = (x && not x) `eq` false
 
-doubleNegationProp :: Boolean a => (a -> a -> Bool) -> a -> Bool
-doubleNegationProp eq x = not (not x) `eq` x
-
 deMorgan1Prop :: Boolean a => (a -> a -> Bool) -> a -> a -> Bool
 deMorgan1Prop eq x y = (not x && not y) `eq` not (x || y)
 
@@ -25,7 +22,6 @@ booleanLaws :: (Arbitrary a, Show a, Boolean a) => (a -> a -> Bool) -> TestTree
 booleanLaws eq = testGroup "Boolean laws"
   [ QC.testProperty "complementation or"   $ complementationOrProp eq
   , QC.testProperty "complementation and"  $ complementationAndProp eq
-  , QC.testProperty "double negation"      $ doubleNegationProp eq
   , QC.testProperty "de Morgan 1"          $ deMorgan1Prop eq
   , QC.testProperty "de Morgan 2"          $ deMorgan2Prop eq
   ]

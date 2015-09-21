@@ -16,7 +16,7 @@ import Data.Function (on)
 import Algebra.Boolean.NormalForms
 
 instance (Show a, Arbitrary a) => Arbitrary (NNF a) where
-  arbitrary = lowerBoolean . (fmap liftNNF) <$> arbitrary
+  arbitrary = retractFreeBoolean . (fmap liftNNF) <$> arbitrary
 
 tests :: TestTree
 tests = testGroup "NNF tree implementation"
@@ -25,10 +25,5 @@ tests = testGroup "NNF tree implementation"
   , booleanLaws eq
   ]
 
-{-
-  , simplifyLaws (undefined :: NNF (Either Bool Bool))
-  , booleanModelLaws (undefined :: NNF (Either Bool Bool))
--}
-
 eq :: NNF Bool -> NNF Bool -> Bool
-eq = (==) `on` lowerNNF
+eq = (==) `on` retractNNF
