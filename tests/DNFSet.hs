@@ -18,9 +18,6 @@ import Data.Function (on)
 import Data.Algebra.Boolean.Negable (Negable)
 import Data.Algebra.Boolean.DNF.Set
 
-instance Arbitrary a => Arbitrary (Sum a) where
-  arbitrary = Sum <$> arbitrary
-
 instance (Ord a, Negable a, Arbitrary a) => Arbitrary (DNF a) where
   arbitrary = fromFreeBoolean <$> arbitrary
 
