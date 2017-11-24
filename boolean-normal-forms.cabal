@@ -1,6 +1,5 @@
 name:                boolean-normal-forms
-version:             0.0.0.1
-x-revision:          2
+version:             0.0.0.2
 synopsis:            Boolean normal form: NNF, DNF & CNF
 description:         The provided types that might be useful in symbolic manipulation of propositional logic expressions.
 license:             MIT
@@ -19,6 +18,10 @@ tested-with:
   GHC==7.10.3,
   GHC==8.0.2,
   GHC==8.2.2
+
+source-repository head
+  type: git
+  location: https://github.com/phadej/boolean-normal-forms.git
 
 library
   hs-source-dirs:      src
