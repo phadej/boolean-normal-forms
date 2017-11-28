@@ -97,6 +97,7 @@ instance NormalForm NNF where
 
 instance NFData a => NFData (NNF a) where
   rnf (NNFValue a) = rnf a
-  rnf (NNFOr a b) = rnf a `seq` rnf b
+  rnf (NNFOr a b)  = rnf a `seq` rnf b
   rnf (NNFAnd a b) = rnf a `seq` rnf b
-  rnf _ = ()
+  rnf NNFTrue      = ()
+  rnf NNFFalse     = ()

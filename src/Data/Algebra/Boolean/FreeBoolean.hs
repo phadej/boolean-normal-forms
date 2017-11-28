@@ -60,7 +60,8 @@ instance Boolean (FreeBoolean a) where
 
 instance NFData a => NFData (FreeBoolean a) where
   rnf (FBValue a) = rnf a
-  rnf (FBNot a) = rnf a
+  rnf (FBNot a)   = rnf a
   rnf (FBAnd a b) = rnf a `seq` rnf b
-  rnf (FBOr a b) = rnf a `seq` rnf b
-  rnf _ = ()
+  rnf (FBOr a b)  = rnf a `seq` rnf b
+  rnf FBTrue      = ()
+  rnf FBFalse     = ()
