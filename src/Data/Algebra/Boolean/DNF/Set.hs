@@ -22,6 +22,7 @@ import Prelude hiding ((||),(&&),not,and,or,any,all)
 import Data.Monoid
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)
+import Control.DeepSeq (NFData(rnf))
 
 import Data.Set (Set)
 import qualified Data.Set as Set
@@ -105,3 +106,6 @@ instance NormalForm DNF where
           q (Left x)                              = x
 
   fromFreeBoolean = fromNNF . toBooleanWith toNormalForm
+
+instance NFData a => NFData (DNF a) where
+  rnf (DNF xss) = rnf xss

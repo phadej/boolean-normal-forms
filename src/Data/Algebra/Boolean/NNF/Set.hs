@@ -27,6 +27,7 @@ import Data.Algebra.Boolean
 
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)
+import Control.DeepSeq (NFData(rnf))
 
 -- | Boolean formula in Negation Normal Form
 --
@@ -102,3 +103,9 @@ instance NormalForm NNF where
   simplify f (NNFOr xs)    = orList $ map (simplify f) $ Set.toList xs
 
   fromFreeBoolean          = toBooleanWith toNormalForm
+
+instance NFData a => NFData (NNF a) where
+  rnf (NNFValue a) = rnf a
+  rnf (NNFOr a) = rnf a
+  rnf (NNFAnd a) = rnf a
+  rnf _ = ()
