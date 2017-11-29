@@ -1,6 +1,5 @@
 name:                boolean-normal-forms
-version:             0.0.0.1
-x-revision:          2
+version:             0.0.1
 synopsis:            Boolean normal form: NNF, DNF & CNF
 description:         The provided types that might be useful in symbolic manipulation of propositional logic expressions.
 license:             MIT
@@ -11,7 +10,7 @@ copyright:           © Oleg Grenrus 2014
 category:            Data
 build-type:          Simple
 cabal-version:       >=1.18
-extra-source-files:  README.md
+extra-source-files:  README.md CHANGELOG.md
 extra-doc-files:      doc-formulae/*.svg
 tested-with:
   GHC==7.6.3,
