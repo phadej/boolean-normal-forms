@@ -24,6 +24,7 @@ import Data.Monoid
 import Data.Either (partitionEithers)
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)
+import Control.DeepSeq (NFData(rnf))
 
 import Data.Algebra.Boolean.NormalForm
 import Data.Algebra.Boolean.Negable hiding (not)
@@ -92,3 +93,6 @@ instance NormalForm DNF where
           q (Left x)               = x
 
   fromFreeBoolean = fromNNF . toBooleanWith toNormalForm
+
+instance NFData a => NFData (DNF a) where
+  rnf (DNF xss) = rnf xss

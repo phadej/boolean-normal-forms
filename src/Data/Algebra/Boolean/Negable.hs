@@ -19,6 +19,7 @@ import Data.Algebra.Boolean.CoBoolean
 
 import Data.Monoid
 import Data.Typeable
+import Control.DeepSeq (NFData(rnf))
 
 import Prelude hiding (not)
 import qualified Prelude as P
@@ -37,6 +38,10 @@ instance CoBoolean (Neg a) where
 instance CoBoolean1 Neg where
   toBooleanWith f (Pos x) = f x
   toBooleanWith f (Neg x) = B.not $ f x
+
+instance NFData a => NFData (Neg a) where
+  rnf (Pos a) = rnf a
+  rnf (Neg a) = rnf a
 
 -- | Class to represent invertible values.
 --

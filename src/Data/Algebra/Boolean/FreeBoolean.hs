@@ -17,6 +17,7 @@ module Data.Algebra.Boolean.FreeBoolean (
 
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)
+import Control.DeepSeq (NFData(rnf))
 
 import Data.Algebra.Boolean.CoBoolean
 import Data.Algebra.Boolean.Negable hiding (not)
@@ -56,3 +57,11 @@ instance Boolean (FreeBoolean a) where
   (||)   = FBOr
   (&&)   = FBAnd
   not    = FBNot
+
+instance NFData a => NFData (FreeBoolean a) where
+  rnf (FBValue a) = rnf a
+  rnf (FBNot a)   = rnf a
+  rnf (FBAnd a b) = rnf a `seq` rnf b
+  rnf (FBOr a b)  = rnf a `seq` rnf b
+  rnf FBTrue      = ()
+  rnf FBFalse     = ()
