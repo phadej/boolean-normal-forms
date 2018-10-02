@@ -39,7 +39,7 @@ library
                        ConstraintKinds,
                        TypeFamilies,
                        ScopedTypeVariables
-  build-depends:       base        >=4.6   && <4.11,
+  build-depends:       base        >=4.6   && <4.12,
                        containers  >=0.5   && <0.6,
                        cond        >=0.4.1 && <0.5,
                        deepseq     >=1.1.0.0 && <1.5
