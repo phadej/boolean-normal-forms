@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE CPP #-}
 --------------------------------------------------------------------
 -- |
 -- Copyright :  © Oleg Grenrus 2014
@@ -20,7 +21,11 @@ module Data.Algebra.Boolean.CNF.List (
   ) where
 
 import Prelude hiding ((||),(&&),not,any,all,and,or)
+
+#if !MIN_VERSION_base(4,11,0)
 import Data.Monoid
+#endif
+
 import Data.Either (partitionEithers)
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)

@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE CPP #-}
 --------------------------------------------------------------------
 -- |
 -- Copyright :  © Oleg Grenrus 2014
@@ -19,7 +20,11 @@ module Data.Algebra.Boolean.DNF.Set (
   ) where
 
 import Prelude hiding ((||),(&&),not,and,or,any,all)
+
+#if !MIN_VERSION_base(4,11,0)
 import Data.Monoid
+#endif
+
 import Data.Typeable (Typeable)
 import Data.Foldable (Foldable)
 import Control.DeepSeq (NFData(rnf))
