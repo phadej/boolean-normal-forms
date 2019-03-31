@@ -7,6 +7,7 @@ license-file:        LICENSE
 author:              Oleg Grenrus
 maintainer:          oleg.grenrus@iki.fi
 copyright:           © Oleg Grenrus 2014
+homepage:            https://github.com/phadej/boolean-normal-forms
 category:            Data
 build-type:          Simple
 cabal-version:       >=1.18
@@ -20,6 +21,10 @@ tested-with:
   GHC==8.2.2,
   GHC==8.4.3,
   GHC==8.6.1
+
+source-repository head
+  type: git
+  location: https://github.com/phadej/boolean-normal-forms.git
 
 library
   hs-source-dirs:      src
