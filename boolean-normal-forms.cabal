@@ -71,5 +71,5 @@ test-suite test
                        cond,
                        tasty                >=0.8,
                        tasty-quickcheck     >=0.8.0.3,
-                       QuickCheck           >=2.10 && <2.13,
+                       QuickCheck           >=2.10 && <2.14,
                        boolean-normal-forms
