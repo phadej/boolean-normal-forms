@@ -19,7 +19,8 @@ tested-with:
   GHC==8.0.2,
   GHC==8.2.2,
   GHC==8.4.3,
-  GHC==8.6.1
+  GHC==8.6.1,
+  GHC==8.10.3
 
 library
   hs-source-dirs:      src
@@ -41,7 +42,7 @@ library
                        ConstraintKinds,
                        TypeFamilies,
                        ScopedTypeVariables
-  build-depends:       base        >=4.6   && <4.13,
+  build-depends:       base        >=4.6   && <4.15,
                        containers  >=0.5   && <0.7,
                        cond        >=0.4.1 && <0.5,
                        deepseq     >=1.1.0.0 && <1.5
@@ -71,5 +72,5 @@ test-suite test
                        cond,
                        tasty                >=0.8,
                        tasty-quickcheck     >=0.8.0.3,
-                       QuickCheck           >=2.10 && <2.13,
+                       QuickCheck           >=2.10 && <2.15,
                        boolean-normal-forms
