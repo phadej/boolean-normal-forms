@@ -2,5 +2,3 @@ dist/
 dist-newstyle/
 .ghc.environment.*
 test.tix
-
-stack.yaml
