@@ -60,10 +60,6 @@ instance Negable (Neg a) where
 instance Negable Bool where
   not = P.not
 
-instance Monoid m => Negable (Maybe m) where
-  not (Just _)  = Nothing
-  not Nothing   = Just mempty
-
 instance (Negable a, Negable b) => Negable (a, b) where
   not (x, y) = (not x, not y)
 
